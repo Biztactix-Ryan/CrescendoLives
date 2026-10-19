@@ -1383,23 +1383,31 @@
     }
   }
 
-  async function fetchWithProgress(url, onProgress) {
-    const r = await fetchRetry(url);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const total = +r.headers.get('content-length') || 0;
-    if (!r.body || !total) return r.arrayBuffer();
-    const reader = r.body.getReader(), out = new Uint8Array(total);
-    let got = 0;
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      if (got + value.length > out.length) return (await new Response(new Blob([out.subarray(0, got), value])).arrayBuffer());
-      out.set(value, got);
-      got += value.length;
-      onProgress(got / total);
+  /** Downloads with progress; restarts once if the connection drops mid-stream. */
+  async function fetchWithProgress(url, onProgress, retry = true) {
+    try {
+      const r = await fetchRetry(url);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      // content-length is the compressed size when the server gzips, so it only steers the progress bar.
+      const total = +r.headers.get('content-length') || 0;
+      if (!r.body || !total) return await r.arrayBuffer();
+      const reader = r.body.getReader(), chunks = [];
+      let got = 0;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        got += value.length;
+        onProgress(Math.min(1, got / total));
+      }
+      return await new Blob(chunks).arrayBuffer();
+    } catch (e) {
+      if (!retry || /^HTTP /.test(e.message)) throw e;
+      await new Promise((res) => setTimeout(res, 800));
+      return fetchWithProgress(url, onProgress, false);
     }
-    return out.buffer.slice(0, got);
   }
+
 
   // ---- The engine: one shared synth, like the one MIDI device you had --------
   const Engine = {
