@@ -1373,8 +1373,18 @@
     try { return decodeURIComponent(new URL(src, location.href).pathname.split('/').pop()) || 'song.mid'; } catch { return String(src); }
   };
 
+  /** fetch() that retries once, since a 31 MB SoundFont on hotel Wi-Fi will hiccup. */
+  async function fetchRetry(url) {
+    try {
+      return await fetch(url);
+    } catch (e) {
+      await new Promise((r) => setTimeout(r, 800));
+      return fetch(url, { cache: 'reload' });
+    }
+  }
+
   async function fetchWithProgress(url, onProgress) {
-    const r = await fetch(url);
+    const r = await fetchRetry(url);
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const total = +r.headers.get('content-length') || 0;
     if (!r.body || !total) return r.arrayBuffer();
@@ -2002,7 +2012,7 @@
         else if (src instanceof Blob) { buf = await src.arrayBuffer(); name = name || src.name; }
         else {
           name = name || fileName(src);
-          const r = await fetch(new URL(src, document.baseURI));
+          const r = await fetchRetry(new URL(src, document.baseURI));
           if (!r.ok) throw new Error(r.status === 404 ? 'File not found' : 'HTTP ' + r.status);
           buf = await r.arrayBuffer();
         }
