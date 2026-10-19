@@ -1,0 +1,33 @@
+<!-- A deliberately 1997 page: no CSS, uppercase tags, just like we used to make them. -->
+<HTML>
+<HEAD>
+<LINK REL="icon" HREF="data:,">
+<TITLE>Crescendo tag test</TITLE>
+<SCRIPT SRC="crescendo/crescendo.js" data-soundfont="soundfonts/GeneralUser-GS.sf2"></SCRIPT>
+</HEAD>
+<BODY BGCOLOR="#C0C0C0" TEXT="#000000" LINK="#0000FF" VLINK="#800080">
+<FONT FACE="Arial">
+<H1>Crescendo Tag Test</H1>
+<P>Each of these is old-school markup that crescendo.js upgrades automatically.</P>
+
+<H3>1. Visible EMBED (default size)</H3>
+<EMBED SRC="midi/canon-in-d.mid" AUTOSTART=FALSE>
+
+<H3>2. EMBED, 145 x 40 (compact), LOOP=3</H3>
+<EMBED SRC="midi/fur-elise.mid" WIDTH=145 HEIGHT=40 LOOP=3>
+
+<H3>3. OBJECT with PARAM</H3>
+<OBJECT TYPE="audio/midi" WIDTH=320 HEIGHT=60><PARAM NAME="src" VALUE="midi/the-entertainer.mid"></OBJECT>
+
+<H3>4. Plain link</H3>
+<P><A HREF="midi/geocities-groove.mid">Click here for MUSIC!!</A> (opens the pop-up player)</P>
+
+<H3>5. Hidden background music</H3>
+<P>There's a <CODE>&lt;BGSOUND SRC=... LOOP=INFINITE&gt;</CODE> on this page; it starts on your first click.</P>
+<BGSOUND SRC="midi/geocities-groove.mid" LOOP=INFINITE>
+
+<HR>
+<P><A HREF="index.html">Back to The MIDI Lounge</A></P>
+</FONT>
+</BODY>
+</HTML>

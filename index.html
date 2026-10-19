@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>~*~ The MIDI Lounge ~*~</title>
+<script src="crescendo/crescendo.js" data-soundfont="soundfonts/GeneralUser-GS.sf2"></script>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0; padding: 12px 16px 40px; color: #fff; background-color: #000;
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 90px 120px, #ccf 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 160px 60px, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 50px 170px, #ffc 50%, transparent 51%),
+      radial-gradient(1px 1px at 130px 190px, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 190px 140px, #aaf 50%, transparent 51%);
+    background-size: 210px 210px;
+    font: 16px/1.4 "Times New Roman", Times, serif;
+  }
+  a { color: #0ff; } a:visited { color: #f0f; } a:hover { color: #ff0; }
+  .page { max-width: 820px; margin: 0 auto; }
+  .wordart {
+    margin: 10px 0 4px; text-align: center; font: italic 900 clamp(30px, 7vw, 54px)/1.05 Impact, "Arial Black", sans-serif;
+    background: linear-gradient(180deg, #ff0 0%, #f80 45%, #f0f 55%, #00f 100%); -webkit-background-clip: text; background-clip: text;
+    color: transparent; -webkit-text-stroke: 1px #fff; filter: drop-shadow(3px 3px 0 #800080); letter-spacing: 1px;
+    animation: wobble 3s ease-in-out infinite;
+  }
+  @keyframes wobble { 50% { transform: skewX(-6deg) scale(1.02); } }
+  marquee, .marquee { display: block; color: #ff0; font: bold 18px "Comic Sans MS", "Comic Neue", cursive; background: #000080; border: 2px ridge #c0c0c0; padding: 3px 0; }
+  .blink { animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { visibility: hidden; } }
+  .construction {
+    margin: 14px auto; max-width: 520px; padding: 6px; text-align: center; color: #000; font: 900 18px/1.2 "Arial Black", Arial, sans-serif;
+    background: repeating-linear-gradient(-45deg, #fc0 0 16px, #000 16px 32px); border: 3px outset #888;
+  }
+  .construction span { display: inline-block; padding: 4px 10px; background: #fc0; }
+  table.layout { width: 100%; border-collapse: separate; border-spacing: 8px; }
+  td.side { width: 170px; vertical-align: top; background: #000060; border: 3px ridge #8080ff; padding: 8px; font-family: Verdana, Arial, sans-serif; font-size: 13px; }
+  td.side ul { margin: 6px 0; padding-left: 18px; }
+  td.main { vertical-align: top; background: rgba(0,0,40,.75); border: 3px ridge #8080ff; padding: 12px 16px; }
+  h2 { margin: 18px 0 8px; font: bold 22px "Comic Sans MS", "Comic Neue", cursive; color: #0f0; text-shadow: 2px 2px #060; }
+  h2:first-child { margin-top: 0; }
+  hr.rainbow { height: 6px; border: 0; margin: 18px 0; background: linear-gradient(90deg, red, orange, yellow, lime, cyan, blue, violet); }
+  .player-box { text-align: center; padding: 10px; border: 2px dashed #ff0; background: rgba(0,0,0,.5); }
+  .player-box p { margin: 8px 0 0; font-size: 14px; color: #ccc; }
+  table.jukebox { width: 100%; border-collapse: collapse; font-family: Verdana, Arial, sans-serif; font-size: 13px; }
+  table.jukebox th { background: #800080; color: #ff0; text-align: left; padding: 4px 6px; border: 1px solid #f0f; }
+  table.jukebox td { padding: 4px 6px; border: 1px solid #404080; }
+  table.jukebox tr:nth-child(even) td { background: rgba(80,80,160,.25); }
+  .note { color: #ff0; }
+  .new { color: #f00; font-weight: bold; font-size: 11px; background: #ff0; padding: 0 3px; }
+  .drop { margin-top: 10px; padding: 18px 10px; text-align: center; border: 3px dashed #0ff; color: #0ff; font: bold 15px "Comic Sans MS", "Comic Neue", cursive; }
+  .drop.over { background: rgba(0,255,255,.15); }
+  .synth label { display: block; margin: 4px 0; font-family: Verdana, Arial, sans-serif; font-size: 13px; }
+  .synth small { color: #aaa; }
+  pre.code { overflow-x: auto; padding: 8px; background: #000; color: #0f0; border: 2px inset #808080; font: 13px/1.4 "Courier New", monospace; }
+  .counter { display: inline-flex; gap: 1px; padding: 2px; background: #222; border: 2px inset #888; }
+  .counter span { width: 14px; padding: 1px 0; text-align: center; color: #0f0; background: linear-gradient(#000, #222 50%, #000); font: bold 16px "Courier New", monospace; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 12px 0; }
+  .badge { width: 88px; height: 31px; display: grid; place-items: center; text-align: center; font: bold 9px/1.05 Verdana, Arial, sans-serif; border: 1px solid #fff; box-shadow: inset -1px -1px #000; }
+  .b1 { background: linear-gradient(#003, #00a); color: #ff0; }
+  .b2 { background: #fff; color: #000; }
+  .b3 { background: linear-gradient(90deg, #600, #f00); color: #fff; }
+  .b4 { background: #000; color: #0f0; border-color: #0f0; }
+  .webring { text-align: center; margin: 16px auto; padding: 8px; max-width: 460px; border: 3px double #ff0; font-family: Verdana, Arial, sans-serif; font-size: 13px; }
+  .guestbook form { display: grid; gap: 6px; max-width: 420px; font-family: Verdana, Arial, sans-serif; font-size: 13px; }
+  .guestbook input, .guestbook textarea { font: 13px "Courier New", monospace; background: #fff; color: #000; border: 2px inset #c0c0c0; padding: 2px 4px; }
+  .guestbook button { justify-self: start; font: 13px Arial, sans-serif; padding: 3px 14px; background: #c0c0c0; color: #000; border: 2px outset #fff; cursor: pointer; }
+  .guestbook button:active { border-style: inset; }
+  .entry { margin: 10px 0; padding: 8px; background: rgba(0,0,0,.5); border-left: 4px solid #f0f; font-family: Verdana, Arial, sans-serif; font-size: 13px; }
+  .entry b { color: #ff0; }
+  .entry .when { color: #888; font-size: 11px; }
+  footer { margin-top: 18px; text-align: center; font: 12px Verdana, Arial, sans-serif; color: #aaa; }
+  .sparkle { position: fixed; pointer-events: none; z-index: 99; font-size: 14px; color: #ff0; text-shadow: 0 0 4px #fff; animation: fall .9s linear forwards; }
+  @keyframes fall { to { transform: translateY(26px) rotate(90deg); opacity: 0; } }
+  @media (max-width: 640px) {
+    table.layout, table.layout tbody, table.layout tr, table.layout td { display: block; width: auto; }
+    td.side { margin-bottom: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .wordart, .blink { animation: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1 class="wordart">The MIDI Lounge</h1>
+  <marquee scrollamount="5">*** Welcome to my homepage!!! *** Turn up your speakers!!! *** This page is best viewed with Crescendo *** Please sign my guestbook before you leave!!! ***</marquee>
+
+  <div class="construction"><span>UNDER CONSTRUCTION</span></div>
+
+  <table class="layout">
+    <tr>
+      <td class="side">
+        <b>~ Navigation ~</b>
+        <ul>
+          <li><a href="#welcome">Home</a></li>
+          <li><a href="#jukebox">MIDI Jukebox</a> <span class="new blink">NEW!</span></li>
+          <li><a href="#synth">My Sound Card</a></li>
+          <li><a href="#howto">Get MIDI on YOUR page</a></li>
+          <li><a href="#guestbook">Guestbook</a></li>
+        </ul>
+        <br>
+        <b>You are visitor #</b><br>
+        <span class="counter" id="counter" aria-label="visitor counter"></span>
+        <br><br>
+        <b>Status:</b><br><span id="engine-status">Loading...</span>
+        <br><br>
+        <small>Last updated:<br>October 19, 1997</small>
+      </td>
+
+      <td class="main">
+        <h2 id="welcome">Welcome, surfer!</h2>
+        <p>Grab a Jolt cola and kick back. This page plays <b>MIDI music</b>: whole songs in files smaller than one picture of my cat. Your browser needs the <b>Crescendo</b> plug-in. Good news: it's built right into this page!</p>
+
+        <div class="player-box">
+          <EMBED SRC="midi/geocities-groove.mid" AUTOSTART=TRUE LOOP=TRUE WIDTH=320 HEIGHT=60>
+          <p>&#9835; Now playing: my theme song. Right-click the player for options! &#9835;</p>
+        </div>
+
+        <hr class="rainbow">
+
+        <h2 id="jukebox">&#9835; The MIDI Jukebox &#9835;</h2>
+        <p>Click a song to play it in the pop-up player. No waiting for downloads!</p>
+        <table class="jukebox">
+          <thead><tr><th>Song</th><th>Composer</th><th>Size</th></tr></thead>
+          <tbody id="songs"><tr><td colspan="3">Loading the jukebox...</td></tr></tbody>
+        </table>
+        <div class="drop" id="drop">Got your own .MID, .KAR or .SF2 file? Drag it here!<br><small>(or click to browse)</small></div>
+
+        <hr class="rainbow">
+
+        <h2 id="synth">My Sound Card</h2>
+        <div class="synth">
+          <label><input type="radio" name="engine" value="fm"> <b>FM Synthesis</b> <small>(Sound Blaster 16 style, built in, zero download)</small></label>
+          <label><input type="radio" name="engine" value="sf2"> <b>Wavetable</b> <small>(GeneralUser GS SoundFont, like having an AWE32!)</small></label>
+          <label><input type="radio" name="engine" value="midi"> <b>External MIDI device</b> <small>(Web MIDI to a real synth, or to FluidSynth/TiMidity)</small></label>
+        </div>
+
+        <hr class="rainbow">
+
+        <h2 id="howto">Put MIDI on YOUR homepage!!</h2>
+        <p>Just paste this into your HTML. It works with your old tags too:</p>
+<pre class="code">&lt;SCRIPT SRC="crescendo/crescendo.js"&gt;&lt;/SCRIPT&gt;
+
+&lt;EMBED SRC="mysong.mid" AUTOSTART=TRUE LOOP=TRUE WIDTH=200 HEIGHT=55&gt;
+&lt;BGSOUND SRC="mysong.mid" LOOP=INFINITE&gt;
+&lt;A HREF="mysong.mid"&gt;Click here for music!&lt;/A&gt;</pre>
+        <p>Want the fancy wavetable sound? Add <code>data-soundfont="mybank.sf2"</code> to the SCRIPT tag.</p>
+
+        <hr class="rainbow">
+
+        <h2 id="guestbook">Sign My Guestbook!!!</h2>
+        <div class="guestbook">
+          <form id="gb">
+            <label>Name: <input name="name" maxlength="40" required></label>
+            <label>Homepage: <input name="url" maxlength="80" placeholder="http://www.geocities.com/..."></label>
+            <label>Comments:<br><textarea name="msg" rows="3" maxlength="400" required></textarea></label>
+            <button type="submit">Sign it!</button>
+          </form>
+          <div id="entries"></div>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <div class="webring">
+    &lt;&lt; <a href="#" onclick="return false">Prev</a> | <b>The 90s MIDI Webring</b> | <a href="#" onclick="return false">Random</a> | <a href="#" onclick="return false">Next</a> &gt;&gt;
+  </div>
+
+  <div class="badges" aria-hidden="true">
+    <div class="badge b1">BEST VIEWED<br>800 x 600</div>
+    <div class="badge b2">MADE WITH<br>NOTEPAD</div>
+    <div class="badge b3">CRESCENDO<br>ENABLED!</div>
+    <div class="badge b4">&gt;_ HTML 3.2<br>COMPLIANT</div>
+  </div>
+
+  <footer>
+    &copy; 1997 The MIDI Lounge. This page uses Crescendo JS Edition, a tribute to the LiveUpdate plug-in.<br>
+    Wavetable sounds: GeneralUser GS by S. Christian Collins.
+  </footer>
+</div>
+
+<script>
+  // Hit counter, the most important feature of any homepage.
+  (function () {
+    let n = 1337;
+    try { n = +(localStorage.getItem('lounge.hits') || 1336) + 1; localStorage.setItem('lounge.hits', n); } catch (e) {}
+    const el = document.getElementById('counter');
+    for (const d of String(n).padStart(6, '0')) { const s = document.createElement('span'); s.textContent = d; el.appendChild(s); }
+  })();
+
+  // The jukebox.
+  (async function () {
+    const tbody = document.getElementById('songs');
+    let list = [];
+    try { list = await (await fetch('midi/playlist.json')).json(); } catch (e) {}
+    tbody.textContent = '';
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="3">No songs yet. Run <code>node tools/make-songs.mjs</code>!</td></tr>'; return; }
+    for (const s of list) {
+      const tr = document.createElement('tr');
+      const a = document.createElement('a');
+      a.href = 'midi/' + s.file;
+      a.textContent = s.title;
+      const td1 = document.createElement('td');
+      td1.append(Object.assign(document.createElement('span'), { className: 'note', textContent: '♫ ' }), a);
+      const td2 = document.createElement('td');
+      td2.textContent = s.composer || '';
+      const td3 = document.createElement('td');
+      td3.textContent = '...';
+      tr.append(td1, td2, td3);
+      tbody.appendChild(tr);
+      fetch(a.href).then((r) => r.arrayBuffer()).then((b) => { td3.textContent = (b.byteLength / 1024).toFixed(1) + ' KB'; }).catch(() => { td3.textContent = '?'; });
+    }
+  })();
+
+  // Drag & drop your own files.
+  (function () {
+    const drop = document.getElementById('drop');
+    const handle = (f) => {
+      if (!f) return;
+      if (/\.sf2$/i.test(f.name)) Crescendo.openSoundFont(f).then(syncEngine, (e) => alert('Could not load that SoundFont: ' + e.message));
+      else Crescendo.play(f);
+    };
+    drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+    drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); handle(e.dataTransfer.files[0]); });
+    drop.addEventListener('click', () => {
+      const i = document.createElement('input');
+      i.type = 'file'; i.accept = '.mid,.midi,.kar,.rmi,.sf2';
+      i.onchange = () => handle(i.files[0]);
+      i.click();
+    });
+  })();
+
+  // Sound card picker.
+  const radios = document.querySelectorAll('input[name=engine]');
+  function syncEngine() {
+    const E = Crescendo.Engine;
+    for (const r of radios) r.checked = r.value === E.kind;
+    const sf = E.sf;
+    document.getElementById('engine-status').textContent =
+      sf.state === 'loading' ? 'Loading instruments ' + Math.round(sf.progress * 100) + '%' : E.synthLabel().toLowerCase();
+  }
+  for (const r of radios) {
+    r.addEventListener('change', () => {
+      Crescendo.Engine.setKind(r.value).then(() => {
+        const p = Crescendo.Engine.owner;
+        if (p && p.state === 'playing') Crescendo.Engine.post({ cmd: 'seek', t: p.currentTime });
+      }).catch((e) => { alert(e.message); }).finally(syncEngine);
+    });
+  }
+  Crescendo.Engine.listeners.add(syncEngine);
+  syncEngine();
+
+  // Guestbook (kept in your browser, much like the free guestbook services kept it on theirs until they vanished).
+  (function () {
+    const key = 'lounge.guestbook';
+    const seed = [
+      { name: 'xX_DarkAngel_Xx', url: '', msg: 'cool page!!! luv the midi. visit my page 2!!', when: 'Tue Oct 14 1997' },
+      { name: 'Webmaster', url: '', msg: 'Thanks for stopping by! New songs every week (maybe).', when: 'Sun Sep 28 1997' },
+    ];
+    let list;
+    try { list = JSON.parse(localStorage.getItem(key)) || seed; } catch (e) { list = seed; }
+    const box = document.getElementById('entries');
+    function render() {
+      box.textContent = '';
+      for (const e of list) {
+        const d = document.createElement('div');
+        d.className = 'entry';
+        const b = document.createElement('b'); b.textContent = e.name;
+        const w = document.createElement('div'); w.className = 'when'; w.textContent = e.when + (e.url ? ' • ' + e.url : '');
+        const m = document.createElement('div'); m.textContent = e.msg;
+        d.append(b, w, m);
+        box.appendChild(d);
+      }
+    }
+    document.getElementById('gb').addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const f = ev.target;
+      list.unshift({ name: f.name.value.trim(), url: f.url.value.trim(), msg: f.msg.value.trim(), when: new Date().toDateString() });
+      try { localStorage.setItem(key, JSON.stringify(list.slice(0, 50))); } catch (e) {}
+      f.reset();
+      render();
+    });
+    render();
+  })();
+
+  // Sparkly cursor trail. Very important.
+  (function () {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let last = 0;
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse' || e.timeStamp - last < 40) return;
+      last = e.timeStamp;
+      const s = document.createElement('span');
+      s.className = 'sparkle';
+      s.textContent = '*✦+'[Math.floor(Math.random() * 3)];
+      s.style.left = e.clientX + 6 + 'px';
+      s.style.top = e.clientY + 6 + 'px';
+      s.style.color = ['#ff0', '#0ff', '#f0f', '#fff'][Math.floor(Math.random() * 4)];
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 900);
+    });
+  })();
+</script>
+</body>
+</html>
